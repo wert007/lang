@@ -1,7 +1,9 @@
+use lang_core::vocab::Vocab;
 use teloxide::{
     dispatching::{DpHandlerDescription, dialogue::InMemStorage},
     dptree::{deps, di::Injectable},
     prelude::*,
+    types::InputPollOption,
 };
 
 const TOKEN: &'static str = include_str!("../token.txt").trim_ascii();
@@ -31,9 +33,18 @@ async fn main() -> R {
 }
 
 async fn ask(bot: Bot, message: Message, d: Dg) -> R {
-    d.get_or_default().await?.init(&message);
-    bot.send_message(message.chat.id, "Nice of you to ask!")
-        .await?;
+    let s = d.get_or_default().await?;
+    s.init(&message);
+    let v: Vocab = s.lang().vocab(0);
+    bot.send_poll(
+        d.chat_id(),
+        format!("What does {} mean?", v.a()),
+        [v.b(), "Wrong answer"].map(InputPollOption::new),
+    )
+    .correct_option_id(0)
+    .is_anonymous(false)
+    .type_(teloxide::types::PollType::Quiz)
+    .await?;
     Ok(())
 }
 

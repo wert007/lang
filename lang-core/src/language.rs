@@ -22,11 +22,15 @@ impl Language {
         v
     }
 
-    pub(crate) fn new(id: u8) -> Self {
+    pub fn new(id: u8) -> Self {
         Self {
             lang_id: LangId(id),
             vocabs: vec![],
         }
+    }
+
+    pub fn vocab(&self, index: usize) -> Vocab {
+        self.vocabs[index].clone()
     }
 }
 
