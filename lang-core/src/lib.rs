@@ -7,5 +7,5 @@ pub mod vocab {
 
 mod language;
 
-#[derive(Debug, Clone)]
-pub struct Image(Arc<PathBuf>);
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, PartialEq)]
+pub struct Image(PathBuf);

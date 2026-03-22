@@ -1,20 +1,24 @@
-use std::sync::Arc;
-
 use crate::{Image, language::LangId};
 
-#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Hash)]
-pub struct VocabId {
-    pub(super) lang_id: LangId,
-    pub(super) index: usize,
+#[derive(
+    Debug, Default, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize,
+)]
+pub struct VocabId(u64);
+impl VocabId {
+    pub(super) fn new(lang_id: LangId, len: usize) -> Self {
+        Self(((lang_id.0 as u64) << 56) | (len as u64) & 0x00FFFFFF_FFFFFFFF)
+    }
 }
 
-#[derive(Debug, Clone)]
+type String = flexstr::SharedStr;
+
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, PartialEq)]
 pub struct Vocab {
     id: VocabId,
-    a: Arc<str>,
-    b: Arc<str>,
-    plural: Option<Arc<str>>,
-    article: Option<Arc<str>>,
+    a: String,
+    b: String,
+    plural: Option<String>,
+    article: Option<String>,
     sex: VocabSex,
     image: Option<Image>,
 }
@@ -23,13 +27,13 @@ pub struct Vocab {
 #[builder(derive(Into))]
 pub struct VocabWithoutId {
     #[builder(into)]
-    a: Arc<str>,
+    a: String,
     #[builder(into)]
-    b: Arc<str>,
+    b: String,
     #[builder(into)]
-    plural: Option<Arc<str>>,
+    plural: Option<String>,
     #[builder(into)]
-    article: Option<Arc<str>>,
+    article: Option<String>,
     #[builder(default)]
     sex: VocabSex,
     #[builder(into)]
@@ -50,7 +54,9 @@ impl VocabWithoutId {
     }
 }
 
-#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(
+    Debug, Default, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize,
+)]
 pub enum VocabSex {
     #[default]
     None,

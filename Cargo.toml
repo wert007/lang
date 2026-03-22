@@ -1,5 +1,3 @@
 [workspace]
-members = [
-    "lang-core",
-    "lang-tg",
-]
+resolver = "3"
+members = ["lang-core", "lang-tg"]
