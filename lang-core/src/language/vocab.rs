@@ -23,6 +23,15 @@ pub struct Vocab {
     image: Option<Image>,
 }
 
+impl Vocab {
+    pub fn a(&self) -> &str {
+        &self.a
+    }
+    pub fn b(&self) -> &str {
+        &self.b
+    }
+}
+
 #[derive(Debug, Clone, bon::Builder)]
 #[builder(derive(Into))]
 pub struct VocabWithoutId {
@@ -38,6 +47,19 @@ pub struct VocabWithoutId {
     sex: VocabSex,
     #[builder(into)]
     image: Option<Image>,
+}
+
+impl<S1: Into<String>, S2: Into<String>> From<(S1, S2)> for VocabWithoutId {
+    fn from((a, b): (S1, S2)) -> Self {
+        Self {
+            a: a.into(),
+            b: b.into(),
+            plural: None,
+            article: None,
+            sex: VocabSex::None,
+            image: None,
+        }
+    }
 }
 
 impl VocabWithoutId {
