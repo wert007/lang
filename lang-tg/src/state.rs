@@ -1,13 +1,25 @@
-use std::sync::Arc;
+use std::sync::{Arc, atomic::AtomicUsize};
 
 use lang_core::Language;
 use parking_lot::Mutex;
-use teloxide::types::{Message, Update, UserId};
+use teloxide::types::{Update, UserId};
+
+#[derive(Debug, Clone, Default)]
+pub struct Session {
+    vocabs_asked: Arc<AtomicUsize>,
+}
+impl Session {
+    pub(crate) fn asked(&self, _v: &lang_core::vocab::Vocab) -> usize {
+        self.vocabs_asked
+            .fetch_add(1, std::sync::atomic::Ordering::SeqCst)
+    }
+}
 
 #[derive(Debug, Clone, Default)]
 pub struct State {
     user: Arc<Mutex<Option<UserId>>>,
     language: Arc<Mutex<Option<Language>>>,
+    session: Session,
 }
 
 impl State {
@@ -23,5 +35,9 @@ impl State {
 
     pub(crate) fn lang(&self) -> Language {
         self.language.lock().clone().unwrap()
+    }
+
+    pub(crate) fn session(&self) -> &Session {
+        &self.session
     }
 }

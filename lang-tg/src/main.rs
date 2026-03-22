@@ -37,14 +37,18 @@ async fn ask(bot: Bot, update: Update, d: Dg) -> R {
     let s = d.get_or_default().await?;
     s.init(&update);
     let v: Vocab = s.lang().vocab(0);
-    bot.send_poll(
-        d.chat_id(),
-        format!("What does {} mean?", v.a()),
-        [v.b(), "Wrong answer"].map(InputPollOption::new),
-    )
-    .correct_option_id(0)
-    .is_anonymous(false)
-    .type_(teloxide::types::PollType::Quiz)
-    .await?;
+    if s.session().asked(&v) > 3 {
+        bot.send_message(d.chat_id(), "You did amazing!").await?;
+    } else {
+        bot.send_poll(
+            d.chat_id(),
+            format!("What does {} mean?", v.a()),
+            [v.b(), "Wrong answer"].map(InputPollOption::new),
+        )
+        .correct_option_id(0)
+        .is_anonymous(false)
+        .type_(teloxide::types::PollType::Quiz)
+        .await?;
+    }
     Ok(())
 }
