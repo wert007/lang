@@ -4,3 +4,8 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+anyhow = "1.0.102"
+lang-core = { version = "0.1.0", path = "../lang-core" }
+parking_lot = "0.12.5"
+teloxide = { version = "0.17.0", features = ["rustls", "macros"] }
+tokio = { version = "1.50.0", features = ["full"] }
